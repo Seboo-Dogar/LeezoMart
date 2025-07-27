@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
-import { dummyAddress } from "../assets/assets";
+// import { dummyAddress } from "../assets/assets";
 import axios from "axios";
 import toast from "react-hot-toast";
+
 const Cart = () => {
   const {
     products,
@@ -133,7 +134,7 @@ const Cart = () => {
               >
                 <img
                   className="max-w-full h-full object-cover"
-                  src={`http://localhost:5000/images/${product.image[0]}`}
+                  src={product.image[0]}
                   alt={product.name}
                 />
               </div>

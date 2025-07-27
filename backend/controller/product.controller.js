@@ -1,25 +1,43 @@
 import Product from "../models/product.model.js";
+import cloudinary from "../config/cloudinary.js";
+
+
+// Upload helper function
+const uploadToCloudinary = async (fileBuffer, originalname) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      {
+        folder: "products",
+        public_id: `${Date.now()}_${originalname.split(".")[0]}`,
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result.secure_url);
+      }
+    ).end(fileBuffer);
+  });
+};
 
 // add product :/api/product/add
+// POST: Add Product
 export const addProduct = async (req, res) => {
   try {
     const { name, price, offerPrice, description, category } = req.body;
-    // const image = req.files?.map((file) => `/uploads/${file.filename}`);
-    const image = req.files?.map((file) => file.filename);
-    if (
-      !name ||
-      !price ||
-      !offerPrice ||
-      !description ||
-      !category ||
-      !image ||
-      image.length === 0
-    ) {
+    const files = req.files;
+
+    if (!name || !price || !offerPrice || !description || !category || !files || files.length === 0) {
       return res.status(400).json({
         success: false,
         message: "All fields including images are required",
       });
     }
+
+    // Upload images to Cloudinary
+    const imageUploadPromises = files.map((file) =>
+      uploadToCloudinary(file.buffer, file.originalname)
+    );
+    const imageUrls = await Promise.all(imageUploadPromises);
 
     const product = new Product({
       name,
@@ -27,7 +45,7 @@ export const addProduct = async (req, res) => {
       offerPrice,
       description,
       category,
-      image,
+      image: imageUrls,
     });
 
     const savedProduct = await product.save();
@@ -39,10 +57,10 @@ export const addProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in addProduct:", error);
-
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error while adding product" });
+    return res.status(500).json({
+      success: false,
+      message: "Server error while adding product",
+    });
   }
 };
 
@@ -55,6 +73,7 @@ export const getProducts = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 // get single product :/api/product/id
 export const getProductById = async (req, res) => {
   try {

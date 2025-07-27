@@ -1,6 +1,6 @@
-import { useState } from "react";
 import ProductCard from "./ProductCard";
 import { useAppContext } from "../context/appContext";
+
 const BestSeller = () => {
   const { products } = useAppContext();
   return (

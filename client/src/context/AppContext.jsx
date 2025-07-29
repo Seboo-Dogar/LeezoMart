@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 export const AppContext = createContext(null);
@@ -39,10 +38,16 @@ export const AppContextProvider = ({ children }) => {
         setUser(data.user);
         setCartItems(data.user.cart);
       } else {
-        toast.error(data.message);
+        // toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      if (error.response?.status !== 401) {
+        toast.error(error.message);
+      } else {
+        // 401 means not logged in – no need to show a toast
+        setUser(null);
+        setCartItems({});
+      }
     }
   };
 
@@ -100,7 +105,6 @@ export const AppContextProvider = ({ children }) => {
     }
     return Math.floor(totalAmount * 100) / 100;
   };
-
 
   // remove product from cart
   const removeFromCart = (itemId) => {

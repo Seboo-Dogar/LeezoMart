@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { dummyOrders } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 
@@ -24,6 +23,7 @@ const MyOrders = () => {
       fetchOrders();
     }
   }, [user]);
+
   return (
     <div className="mt-12 pb-16">
       <div>
@@ -50,7 +50,7 @@ const MyOrders = () => {
               <div className="flex items-center mb-4 md:mb-0">
                 <div className="p-4 rounded-lg">
                   <img
-                    src={`http://localhost:5000/images/${item.product.image[0]}`}
+                    src={item.product.image[0]}
                     alt=""
                     className="w-16 h-16"
                   />

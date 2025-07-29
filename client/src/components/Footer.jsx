@@ -109,12 +109,13 @@ const Footer = () => {
             Subscribe to our newsletter for inspiration and special offers.
           </p>
           <div className="flex items-center mt-4">
+            <div className="rounded-full border border-gray-300 flex">
             <input
               type="text"
-              className="bg-white rounded-l border border-gray-300 h-9 px-3 outline-none"
+              className="bg-white  h-9 px-3 outline-none"
               placeholder="Your email"
             />
-            <button className="flex items-center justify-center bg-black h-9 w-9 aspect-square rounded-r">
+            <button className="flex items-center justify-center bg-black h-9 w-9 aspect-square rounded-full">
               {/* Arrow icon */}
               <svg
                 className="w-4 h-4 text-white"
@@ -134,6 +135,7 @@ const Footer = () => {
                 />
               </svg>
             </button>
+            </div>
           </div>
         </div>
       </div>

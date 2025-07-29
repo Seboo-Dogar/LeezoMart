@@ -1,35 +1,42 @@
 import { useState } from "react";
 import { useAppContext } from "../context/appContext";
 import { toast } from "react-hot-toast";
+
 const Auth = () => {
-  const [state, setState] = useState("login");
+  const [state, setState] = useState("login"); // "login" or "register"
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // <-- NEW
+
   const { setShowUserLogin, setUser, axios, navigate } = useAppContext();
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
       const { data } = await axios.post(`/api/user/${state}`, {
         name,
         email,
         password,
       });
+
       if (data.success) {
         toast.success(data.message);
-        navigate("/");
         setUser(data.user);
         setShowUserLogin(false);
+        navigate("/");
       } else {
         toast.error(data.message);
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message || "Something went wrong");
+    }
   };
+
   return (
     <div
       onClick={() => setShowUserLogin(false)}
-      className="fixed top-0 left-0 bottom-0 right-0 z-30 flex items-center justify-center  bg-black/50 text-gray-600"
+      className="fixed top-0 left-0 bottom-0 right-0 z-30 flex items-center justify-center bg-black/50 text-gray-600"
     >
       <form
         onSubmit={handleSubmit}
@@ -40,49 +47,67 @@ const Auth = () => {
           <span className="text-indigo-500">User</span>{" "}
           {state === "login" ? "Login" : "Register"}
         </p>
+
         {state === "register" && (
           <div className="w-full">
             <p>Name</p>
             <input
               onChange={(e) => setName(e.target.value)}
               value={name}
-              placeholder="type here"
+              placeholder="Type here"
               className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
               type="text"
               required
             />
           </div>
         )}
-        <div className="w-full ">
+
+        <div className="w-full">
           <p>Email</p>
           <input
             onChange={(e) => setEmail(e.target.value)}
             value={email}
-            placeholder="type here"
+            placeholder="Type here"
             className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
             type="email"
             required
           />
         </div>
-        <div className="w-full ">
+
+        <div className="w-full relative">
           <p>Password</p>
           <input
             onChange={(e) => setPassword(e.target.value)}
             value={password}
-            placeholder="type here"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
-            type="password"
+            placeholder="Type here"
+            className="border border-gray-200 rounded w-full p-2 mt-1 pr-10 outline-indigo-500"
+            type={showPassword ? "text" : "password"} // <-- toggle here
             required
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-2 top-[38px] text-gray-500 hover:text-indigo-600"
+            tabIndex={-1}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              // You can use any icon here, e.g. SVG eye slash or text
+              <span>🙈</span>
+            ) : (
+              <span>👁️</span>
+            )}
+          </button>
         </div>
+
         {state === "register" ? (
           <p>
-            Already have account?{" "}
+            Already have an account?{" "}
             <span
               onClick={() => setState("login")}
               className="text-indigo-500 cursor-pointer"
             >
-              click here
+              Click here
             </span>
           </p>
         ) : (
@@ -92,10 +117,11 @@ const Auth = () => {
               onClick={() => setState("register")}
               className="text-indigo-500 cursor-pointer"
             >
-              click here
+              Click here
             </span>
           </p>
         )}
+
         <button className="bg-indigo-500 hover:bg-indigo-600 transition-all text-white w-full py-2 rounded-md cursor-pointer">
           {state === "register" ? "Create Account" : "Login"}
         </button>
@@ -103,4 +129,5 @@ const Auth = () => {
     </div>
   );
 };
+
 export default Auth;

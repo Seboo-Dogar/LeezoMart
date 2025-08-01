@@ -16,6 +16,7 @@ const Cart = () => {
     updateCartItem,
     axios,
     user,
+    setShowUserLogin,
   } = useAppContext();
 
   // state to store the products available in cart
@@ -63,47 +64,54 @@ const Cart = () => {
       getCart();
     }
   }, [products, cartItems]);
+
   const placeOrder = async () => {
-    try {
-      if (!selectedAddress) {
-        return toast.error("Please select an address");
-      }
-      // place order with cod
-      if (paymentOption === "COD") {
-        const { data } = await axios.post("/api/order/cod", {
-          items: cartArray.map((item) => ({
-            product: item._id,
-            quantity: item.quantity,
-          })),
-          address: selectedAddress._id,
-        });
-        if (data.success) {
-          toast.success(data.message);
-          setCartItems({});
-          navigate("/my-orders");
-        } else {
-          toast.error(data.message);
-        }
-      } else {
-        const { data } = await axios.post("/api/order/stripe", {
-          items: cartArray.map((item) => ({
-            product: item._id,
-            quantity: item.quantity,
-          })),
-          address: selectedAddress._id,
-        });
-         
-        if (data.success) {
-          toast.success(data.message);
-          window.location.replace(data.url);
-        } else {
-          toast.error(data.message);
-        }
-      }
-    } catch (error) {
-      toast.error(error.message);
+  try {
+    if (!user) {
+      toast.error("Please login to place your order");
+      setShowUserLogin(true);
+      return;
     }
-  };
+
+    if (!selectedAddress) {
+      toast.error("Please select or add an address before placing the order");
+      if (address.length === 0) {
+        navigate("/add-address");
+      }
+      return;
+    }
+
+    const orderPayload = {
+      items: cartArray.map((item) => ({
+        product: item._id,
+        quantity: item.quantity,
+      })),
+      address: selectedAddress._id,
+    };
+
+    if (paymentOption === "COD") {
+      const { data } = await axios.post("/api/order/cod", orderPayload);
+      if (data.success) {
+        toast.success(data.message);
+        setCartItems({});
+        navigate("/my-orders");
+      } else {
+        toast.error(data.message);
+      }
+    } else {
+      const { data } = await axios.post("/api/order/stripe", orderPayload);
+      if (data.success) {
+        toast.success(data.message);
+        window.location.replace(data.url);
+      } else {
+        toast.error(data.message);
+      }
+    }
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
 
   return products.length > 0 && cartItems ? (
     <div className="flex flex-col md:flex-row py-16 max-w-6xl w-full px-6 mx-auto">
@@ -226,12 +234,21 @@ const Cart = () => {
                 ? `${selectedAddress.street},${selectedAddress.city},${selectedAddress.state},${selectedAddress.country}`
                 : "No Address Found"}
             </p>
+
             <button
-              onClick={() => setShowAddress(!showAddress)}
+              onClick={() => {
+                if (!user) {
+                  toast.error("Please login to change address");
+                  setShowUserLogin(true);
+                } else {
+                  setShowAddress(!showAddress);
+                }
+              }}
               className="text-indigo-500 hover:underline cursor-pointer"
             >
               Change
             </button>
+
             {showAddress && (
               <div className="absolute top-12 py-1 bg-white border border-gray-300 text-sm w-full">
                 {address.map((address, index) => (
@@ -248,7 +265,14 @@ const Cart = () => {
                   </p>
                 ))}
                 <p
-                  onClick={() => navigate("/add-address")}
+                  onClick={() => {
+                    if (!user) {
+                      toast.error("Please login to add an address");
+                      setShowUserLogin(true);
+                    } else {
+                      navigate("/add-address");
+                    }
+                  }}
                   className="text-indigo-500 text-center cursor-pointer p-2 hover:bg-indigo-500/10"
                 >
                   Add address
@@ -299,4 +323,6 @@ const Cart = () => {
     </div>
   ) : null;
 };
+
+
 export default Cart;

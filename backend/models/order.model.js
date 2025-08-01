@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema(
     ],
     amount: { type: Number, required: true },
     address: { type: String, required: true, ref: "Address" },
-    status: { type: String, default: "Order Placed" },
+    status: { type: String,  enum: ["Order Placed", "Shipped", "Delivered", "Cancelled"], default: "Order Placed" },
     paymentType: { type: String, required: true },
     isPaid: { type: Boolean, required: true, default: false },
   },

@@ -109,6 +109,12 @@ const Navbar = () => {
             <img src={assets.profile_icon} alt="" className="w-10" />
             <ul className="hidden group-hover:block absolute top-10 roght-0 bg-white shadow border border-gray-200 py-2 w-30 rounded-md z-40 text-sm">
               <li
+                // onClick={() => navigate("/my-orders")}
+                className="p-1.5 text-indigo-500 font-semibold"
+              >
+                {user.name}
+              </li>
+              <li
                 onClick={() => navigate("/my-orders")}
                 className="p-1.5 cursor-pointer"
               >
@@ -198,6 +204,12 @@ const Navbar = () => {
           <div className="relative group">
             <img src={assets.profile_icon} alt="" className="w-10" />
             <ul className="hidden group-hover:block absolute top-10 roght-0 bg-white shadow border border-gray-200 py-2 w-30 rounded-md z-40 text-sm">
+              <li
+                // onClick={() => navigate("/my-orders")}
+                className="p-1.5 cursor-pointer"
+              >
+                {user.name}
+              </li>
               <li
                 onClick={() => navigate("/my-orders")}
                 className="p-1.5 cursor-pointer"

@@ -109,10 +109,10 @@ const Footer = () => {
             Subscribe to our newsletter for inspiration and special offers.
           </p>
           <div className="flex items-center mt-4">
-            <div className="rounded-full border border-gray-300 flex">
+            <div className="rounded-full border border-gray-300 flex transition-all duration-300 ease-in-out hover:border-gray-500">
             <input
               type="text"
-              className="bg-white  h-9 px-3 outline-none"
+              className="bg-white  h-9 px-3 outline-none rounded-full"
               placeholder="Your email"
             />
             <button className="flex items-center justify-center bg-black h-9 w-9 aspect-square rounded-full">

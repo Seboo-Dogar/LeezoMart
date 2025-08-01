@@ -67,10 +67,10 @@ Before setting up the project, ensure you have the following installed:
 Follow these steps to clone and run the project locally.
 
 ### 1. Clone the Repository
-1. Copy the repository URL (e.g., `https://github.com/username/LeezoMart.git`).
+1. Copy the repository URL (e.g., `https://github.com/Seboo-Dogar/LeezoMart.git`).
 2. Open a terminal and run:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Seboo-Dogar/LeezoMart.git
    ```
 3. Navigate to the project directory:
    ```bash

@@ -171,3 +171,34 @@ export const getAllOrders = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const allowedStatuses = ["Order Placed", "Shipped", "Delivered", "Cancelled"];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status", success: false });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found", success: false });
+    }
+
+    order.status = status;
+
+    if (status === "Delivered" && order.paymentType === "COD") {
+      order.isPaid = true;
+    }
+    
+    await order.save();
+
+    res.status(200).json({ message: "Order status updated", success: true });
+  } catch (error) {
+    console.error("Update Status Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

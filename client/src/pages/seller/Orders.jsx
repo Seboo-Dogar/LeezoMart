@@ -52,7 +52,10 @@ const Orders = () => {
                       <span className="text-red-500">[Missing Product]</span>
                     )}
                     {item.quantity > 1 && (
-                      <span className="text-indigo-500"> x {item.quantity}</span>
+                      <span className="text-indigo-500">
+                        {" "}
+                        x {item.quantity}
+                      </span>
                     )}
                   </p>
                 </div>
@@ -80,10 +83,46 @@ const Orders = () => {
               Total Amount: ${order.amount}
             </p>
             <p>Payment Method: {order.paymentType}</p>
-            <p>Status: {order.status}</p>
+            <div>
+              <label className="mr-2 font-medium">Status:</label>
+              <select
+                value={order.status}
+                onChange={async (e) => {
+                  const newStatus = e.target.value;
+                  try {
+                    const { data } = await axios.put(
+                      `/api/order/${order._id}/status`,
+                      {
+                        status: newStatus,
+                      }
+                    );
+                    if (data.success) {
+                      toast.success("Status updated");
+                      fetchOrders(); // refresh list
+                    } else {
+                      toast.error(data.message);
+                    }
+                  } catch (err) {
+                    toast.error("Failed to update status");
+                  }
+                }}
+                className="border border-gray-300 rounded px-2 py-1"
+              >
+                {["Order Placed", "Shipped", "Delivered", "Cancelled"].map(
+                  (stat) => (
+                    <option key={stat} value={stat}>
+                      {stat}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+
             <p>
               Payment:{" "}
-              <span className={order.isPaid ? "text-green-600" : "text-red-600"}>
+              <span
+                className={order.isPaid ? "text-green-600" : "text-red-600"}
+              >
                 {order.isPaid ? "Paid" : "Pending"}
               </span>
             </p>
